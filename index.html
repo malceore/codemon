@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title> CODEMON v0.1 </title>
+
+
+<!-- JAVASCRIPT SECTION -->
+<script>
+function update(){
+    var x = document.getElementById('code').value;
+    document.getElementById('display').contentDocument.write(x);
+    // Without close, would leave old code up on html page. 
+    document.getElementById('display').contentDocument.close();
+}   
+</script>
+
+
+<!-- CSS SECTION -->
+<style>
+#code_wrapper{
+    padding-top:1em;
+    text-align:center;
+    width:45%;
+    float:left;
+    background-color:blue;
+    min-height:600px;
+}
+
+#game_wrapper{
+    padding-top:1em;
+    text-align:center;
+    width:55%;
+    min-height:600px;
+    float:left;
+    background-color:grey;
+}
+
+textarea {
+    width: 500px;
+    height: 550px;
+}
+
+iframe {
+    width: 580px;
+    height: 550px;
+}
+
+
+</style>
+</head>
+
+
+<!-- HTML SECTION -->
+<body>
+    <div>
+        <div id="code_wrapper">
+	    <textarea id="code"> <b> CODE! </b> </textarea>
+	    <br>
+	    <input onclick="update();" value="update_page" type="button">
+        </div>
+        <div id="game_wrapper">
+	    <iframe id="display"></iframe>
+	    <!--<canvas id="game"></canvas>-->
+        </div>
+    </div>
+</body>
