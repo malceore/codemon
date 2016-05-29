@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <title> CODEMON v0.1 </title>
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 
 
 <!-- JAVASCRIPT SECTION -->
@@ -22,7 +25,7 @@ function update(){
     text-align:center;
     width:45%;
     float:left;
-    background-color:blue;
+    background-color:Gainsboro;
     min-height:600px;
 }
 
@@ -32,7 +35,12 @@ function update(){
     width:55%;
     min-height:600px;
     float:left;
-    background-color:grey;
+    background-color:Gainsboro;
+}
+
+#topbar{
+    background-color:Gainsboro;
+    width:100%;
 }
 
 textarea {
@@ -44,8 +52,6 @@ iframe {
     width: 580px;
     height: 550px;
 }
-
-
 </style>
 </head>
 
@@ -56,7 +62,7 @@ iframe {
         <div id="code_wrapper">
 	    <textarea id="code"> <b> CODE! </b> </textarea>
 	    <br>
-	    <input onclick="update();" value="update_page" type="button">
+	    <input onclick="update();" value="Refresh" type="button">
         </div>
         <div id="game_wrapper">
 	    <iframe id="display"></iframe>
