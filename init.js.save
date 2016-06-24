@@ -1,0 +1,103 @@
+// Code'mon
+// Created by Brandon T. Wood on May 1st, 2016
+
+var creatures;
+var stage;
+var renderer;
+var blocks = [];
+
+//Calls all the initial methods needed to setup and play the game.
+function init(){
+
+	// Setup Pixi.js stage
+	console.log("Attempting Setup");
+	stage = new PIXI.Stage(0x66FF99);
+	var canvas = document.getElementById("game");
+	var renderer = PIXI.autoDetectRenderer(400, 300,{view: canvas});
+	document.body.appendChild(renderer.view);
+
+	// Time to setup!
+	//Here is the menu that will hold the blocks.
+	var menu = new PIXI.Graphics();
+	menu.beginFill(0xFFFF00);
+	menu.drawRect(0, 0, 80, 300);
+	stage.addChild(menu);
+
+	var basic_block = new PIXI.Graphics();
+        basic_block.beginFill(0xFFF);
+        basic_block.drawRect(10, 10, 60, 20);
+        basic_block.buttonMode = true;
+        basic_block.interactive = true;
+        stage.addChild(basic_block);
+
+
+	basic_block.mousedown = function(data){
+		blocks.push()
+		//var block = new block();
+		//stage.addChild(block.block_basic);
+                //block.basic_block.alpha = 0.9;
+                //block.basic_block.dragging = true;
+                //block.block_basic.data = data;
+		console.log("clicked!");
+		this.alpha = 0.9;
+		this.dragging = true;
+		this.data = data;
+	}
+
+	basic_block.mouseup = basic_block.mouseupoutside = function(data){
+                //console.log("   DROPPED!");
+                //var newPosition = this.data.getLocalPosition(this.parent);
+                //this.position.x = newPosition.x;
+                //this.position.y = newPosition.y;
+
+		this.data = null;
+		this.alpha = 1
+		this.dragging = false;
+	}
+
+	basic_block.mousemove = function(data){
+		if(this.dragging){
+			// need to get parent coords..
+			var newPosition = this.data.getLocalPosition(this.parent);
+			this.position.x = newPosition.x;
+			this.position.y = newPosition.y;
+		}
+	}
+
+	console.log("Setup successful!\nGame Start!");
+	update();
+	// Main game loop!
+	function update(){
+
+		// Call AI functions
+
+		renderer.render(stage);
+		requestAnimFrame(update);
+	}
+}
+
+
+function block(){
+
+        this.basic_block = new PIXI.Graphics();
+        this.basic_block.begivar person = {firstName:"John", lastName:"Doe", age:50, eyeColor:"blue"};nFill(0xFFFFFF);
+        this.basic_block.drawRect(10, 10, 60, 20);
+        this.basic_block.buttonMode = true;
+        this.basic_block.interactive = true;
+        stage.addChild(this.basic_block);
+}
+
+
+function randomCreatures(){
+
+	// Randomly laces old ones.
+
+	// Builds for new ones.
+	for(var i=0; i<3; i++){
+
+		creatures[i] = new creature(0xb3b3ff);
+		//var temp = Math.random();
+		console.log("Generate creature: " + i);
+	}
+}
+
