@@ -3,6 +3,7 @@
 var stage;
 var renderer;
 var blocks=[];
+var menu;
 var running = false;
 
 //Calls all the initial methods needed to setup and play the game.
@@ -17,7 +18,7 @@ function init(){
 
 	// Time to setup!
 	//Here is the menu that will hold the blocks.
-	var menu = new PIXI.Graphics();
+	menu = new PIXI.Graphics();
 	menu.beginFill(0xFFFF00);
 	menu.drawRect(0, 0, 80, 300);
 	stage.addChild(menu);
@@ -26,6 +27,17 @@ function init(){
         var bar = new PIXI.Graphics();
         bar.beginFill(0xFF0000);
         bar.drawRect(80, 0, 320, 15);
+
+	// Circle button that launches the interpreter.
+	var run_button = new PIXI.Graphics();
+        run_button.beginFill(0xFFF000);
+	run_button.drawCircle(240, 7, 15);
+        run_button.buttonMode = true;
+        run_button.interactive = true;
+        run_button.click = run_button.tap = function(data){
+		run_interpreter();	
+	}
+	bar.addChild(run_button);
         stage.addChild(bar);
 
 	//var block_button = new new_block();
@@ -45,10 +57,13 @@ function init(){
 			}else{
 				// Increment y position of bar.
 				//console.log("Running");
-				bar.position.y += 2;			
+				bar.position.y += 2;
 				for(var i=0; i<blocks.length; i++){
-					if(hitTest(bar, blocks[i].block) ){
-						console.log("HIT");
+					//console.log("Checking..");
+					if(hitTest(blocks[i].block, bar)){
+						//console.log("HIT");
+						console.log("La");
+//----------------------------------------------Placeholder La Text heere
 					}
 				}
 			}
@@ -76,40 +91,15 @@ function clear_board(){
 }
 
 
-// Checks for collisions between graphics.
-function hitTest(a, b) {
-
-  /* If it has a child we need to change some values for hitboxes.
-  if(a.children.length != 0){
-
-    if(a.position.x + a.getChildAt(0).position.x < (b.position.x + b.width) && a.position.x + a.getChildAt(0).position.x > b.position.x){
-      if(a.position.y + a.getChildAt(0).position.y < (b.position.y + b.height) && a.position.y > b.position.y + a.getChildAt(0).position.y){
-        return true;
-      }
-    }
-    //return false;
-  }else if(b.children.length != 0){
-
-    if(a.position.x < b.getChildAt(0).position.x + (b.position.x + b.width) && a.position.x > b.position.x + b.getChildAt(0).position.x){
-      if(a.position.y < (b.position.y + b.height) + b.getChildAt(0).position.y && a.position.y > b.position.y + b.getChildAt(0).position.y){
-        return true;
-      }
-    }
-    //return false;
-*/
-  // Else treat it normally.
-  //}else{
-    if(a.position.x < (b.position.x + b.width) && a.position.x > b.position.x){
-	console.log("Made it 1");
-      if(a.position.y < (b.position.y + b.height) && a.position.y > b.position.y){
-        return true;
-      }
-    }
-    return false;
-  //}
-  //return false;
+function hitTest(a, b){
+	if(Math.abs(a.position.y - b.position.y) < 1){
+	//if(a.position.x <= (b.position.x + b.width)){
+		//if(a.position.y <= (b.position.y + b.height)){
+			return true;
+		//}
+	}
+	return false;
 }
-
 
 
 // This creates the basic block that the game will use to create all other blocks later on by changing their graphics and adding special affects.
@@ -128,7 +118,7 @@ function block(){
 		if(isButton){
 			// This is how new blocks are spawned, new block becomes the button and old block gets dragged on to play screen.
 			isButton = false;
-			console.log("Printing new button underneath! " + blocks + " length:"+blocks.length);
+			//console.log("Printing new button underneath! " + blocks + " length:"+blocks.length);
 			blocks.push(new block());
 			stage.addChild(blocks[blocks.length-1].block);
 		}
@@ -142,6 +132,13 @@ function block(){
 		this.dragging = false;
 		// set the interaction data to null
 		this.data = null;
+		// Gotta check if dragged back to menu.
+		//if(){
+		if(this.position.x < (80 + menu.position.x)){
+			if(this.position.y < (menu.position.y + 300)){
+				stage.removeChild(this);
+			}
+		}
 	};
 	// set the callbacks for when the mouse or a touch moves
 	this.block.mousemove = this.block.touchmove = function(data){
