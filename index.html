@@ -18,6 +18,7 @@ function update(){
 </script>
 <script src="pixi.js"></script>
 <script src="init.js" type="text/javascript"></script>
+<script src="game.js" type="text/javascript"></script>
 
 <!-- CSS SECTION -->
 <style>
@@ -50,11 +51,12 @@ iframe {
 <body>
 
   <div width="100%">
-    <ul class="nav nav-tabs">
+   <!-- <ul class="nav nav-tabs">
       <li><a data-toggle="tab" href="#script">Javascript</a></li>
       <li class="active""><a data-toggle="tab" href="#blocks">Blocks</a></li>
       <li> <input onclick="update();" value="Refresh" type="button"> </li>
-    </ul> 
+    </ul>-->
+	<div>Codemon</div> 
   </div>
 
   <div style="float:left;">
@@ -66,7 +68,8 @@ iframe {
       <div id="blocks" class="tab-pane fade in active">
 	<canvas id="game" width="650px" height="300px">You need a newwer browser to play this game.</canvas>
    	<script type="text/javascript">
-	  init();
+	  //init();
+	  run();
         </script>
       </div>
     </div>

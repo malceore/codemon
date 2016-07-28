@@ -1,16 +1,16 @@
 // Code'mon 0.0.3
 // Created by Brandon T. Wood on May 1st, 2016
-var stage;
+/*var stage;
 var renderer;
 var blocks=[];
 var menu;
 var game;
-var monster_object;
+var monster_object;*/
 var running = false;
 var id_counter = 1;
 
 //Calls all the initial methods needed to setup and play the game.
-function init(){
+/*function init(){
 
 	// Setup Pixi.js stage
 	console.log("Attempting Setup");
@@ -66,7 +66,7 @@ function init(){
 	update();
 
 	// Main game loop!
-	function update(){
+	//function update(){
 		// Loop that moves the interpreter.
 		if(running){
 			if(bar.position.y > 290){
@@ -88,7 +88,7 @@ function init(){
 		renderer.render(stage);
 		requestAnimFrame(update);
 	}
-}
+}*/
 
 //Generic monster object.
 function monster(){
@@ -150,11 +150,12 @@ function hitTest(a, b){
 
 
 // This creates the basic block that the game will use to create all other blocks later on by changing their graphics and adding special affects.
-function block(){
+function block(name){
 
 	// Need ot give them id for removal purposes, may make array in hash map later.
 	var id = id_counter;
 	this.id = id;
+	this.name = name;
 	id_counter++;
 
 	// Generic square from pixi graphics.
@@ -163,12 +164,14 @@ function block(){
         this.block.drawRect(10, 10, 60, 20);
         this.block.buttonMode = true;
         this.block.interactive = true;
+	//stage.addChild(block);
 
 	// Whatever the name of the block is.
-        this.text = new PIXI.Text('La',{font : '16px Arial', fill : 0xff1010, align : 'center'});
+        this.text = new PIXI.Text(this.name,{font : '13px Arial', fill : 0xff1010, align : 'center'});
 	this.text.position.x = 30;
 	this.text.position.y = 15; 
 	this.block.addChild(this.text);
+        //stage.addChild(block);
 
 	// Basicaly is button is true to spawn a new button when the old block is moved.
 	var isButton = true;
@@ -222,5 +225,4 @@ function block(){
 		}
 	};
 }
-
 
