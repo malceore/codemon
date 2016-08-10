@@ -6,7 +6,7 @@
 //var renderer;
 var level_list = {length:20};
 level_list[0]=new Level("","","cow farmer tractor if loop input");
-level_list[1]=new Level("","cow cow","cow farmer tractor if loop input");
+level_list[1]=new Level("","cow cow","cow farmer loop if");
 level_list[2]=new Level("","","");
 level_list[3]=new Level("","","");
 level_list[4]=new Level("","","");
@@ -321,7 +321,6 @@ function graphical_queue(){
 		//Must loop through and move all characters to the left to fill in space. coelece.. coalese.. 
 		var holder;
 		for(var i=0; i<this.queue.length; i++){
-
 			this.queue[i].position.x -= 80;
 		}
 		console.log("removed a sprite!");
@@ -336,7 +335,7 @@ function populate_queue(input_queue){
         //input.container.position.y = 200;
 	var i, holder;
 	for(i in input_queue){
-		console.log("pushing " + i);
+		//console.log("pushing " + i);
 		//var tex = PIXI.Texture.fromImage("res/" + i + ".png");
                 var tex = PIXI.Texture.fromImage("res/cow.png");
 		holder = new PIXI.Sprite(tex);
@@ -354,15 +353,19 @@ function update(){
 			// We have hit bottom, reset and turn off running.
 			running = false;
 			bar.position.y = 0;
+			//check for win conditions.
+
 		}else{
 			// Increment y position of bar.
 			//console.log("Running");
 			bar.position.y += 1;
 			for(var i=0; i<blocks.length; i++){
 				//console.log("Checking..");
-				if(hitTest(blocks[i].block, bar)){
-					console.log("Hit");
-					//monster_object.action();
+				if( hitTest(blocks[i].block, bar) ){
+					console.log(" "+blocks[i].name);
+					if(blocks[i].name == "input"){
+						output.push(input.pop());
+					}
 				}
 			}
 		}

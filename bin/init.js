@@ -139,8 +139,16 @@ function clear_board(){
 
 
 function hitTest(a, b){
+    /*if(a.position.x < (b.position.x + b.width) && a.position.x > b.position.x){
+      if(a.position.y < (b.position.y + b.height) && a.position.y > b.position.y){
+        return true;
+      }
+    }*/
 	if(Math.abs(a.position.y - b.position.y) < 1){
-		if(a.position.x <= (b.position.x + b.width)){
+		if(a.position.x > 80){
+		//	return true;
+		//if( (a.position.x >= b.position.x) && (a.position.x <= (b.position.x + b.width))){
+		//if(a.position.x <= (b.position.x + b.width)){
 		//if(a.position.y <= (b.position.y + b.height)){
 			return true;
 		}
@@ -156,45 +164,62 @@ function block(name){
 	var id = id_counter;
 	this.id = id;
 	this.name = name;
+	var name = name;
 	id_counter++;
 
-	// Generic square from pixi graphics.
-        this.block = new PIXI.Graphics();
-        this.block.beginFill(0xFFFFFF);
-        this.block.drawRect(10, 10, 60, 20);
-        this.block.buttonMode = true;
-        this.block.interactive = true;
-	//stage.addChild(block);
+	var parentX = this.parentX = 10;
+        var parentY = this.parentY = 2;
+	var childX = this.childX = 50;
+        var childY = this.childY = 18;
 
-	// Whatever the name of the block is.
-        this.text = new PIXI.Text(this.name,{font : '13px Arial', fill : 0xff1010, align : 'center'});
-	this.text.position.x = 30;
-	this.text.position.y = 15; 
-	this.block.addChild(this.text);
-        //stage.addChild(this.block);
+        this.text = new PIXI.Text(this.name,{font : '30px Arial', fill : 0xff1010, align : 'center'});
 
-	this.block.draggable({ 
-		mousedown:function(){
-			console.log("DOWN");
-			//var temp = new block("test");
-			//temp.block.position.x = this.position.x;
-                        //temp.block.position.y = this.position.y;
+	if(name == "if"){
+                // Generate pixi sprite.
+                this.block = new PIXI.Sprite.fromImage('res/if_statement.png');     
+                this.block.scale.x = this.block.scale.y = 0.4;
+                this.block.buttonMode = true;
+                this.block.interactive = true;
 
-		},
-		mouseup:function(){
-                        console.log("UP");
-                },
-                /*mousemove:function(){
-                        console.log("MOVE");
-                } */
+                this.text.text = name+"            equals";
+                this.text.position.x = 100;
+                this.text.position.y = 25; 
 
-	});
-	// New drag and drop code with help from separate library.
+	}else if(name == "loop"){
+                // Generate pixi sprite.
+                this.block = new PIXI.Sprite.fromImage('res/act_loop.png');     
+                this.block.scale.x = this.block.scale.y = 0.4;
+                this.block.buttonMode = true;
+                this.block.interactive = true;
 
-	
+                this.text.position.x = 100;
+                this.text.position.y = 30; 
 
-	/* Basicaly is button is true to spawn a new button when the old block is moved.
-	var isButton = true;
+                var parentX = this.parentX = 0;
+                var parentY = this.parentY = 5;
+                var childX = this.childX = 0;
+                var childY = this.childY = 25;
+	}else{
+		// It's a generic variable then.
+		this.block = new PIXI.Sprite.fromImage('res/act_variable.png');	
+		this.block.scale.x = this.block.scale.y = 0.4;
+	        this.block.buttonMode = true;
+	        this.block.interactive = true;
+
+		// Whatever the name of the block is.
+		this.text.position.x = 80;
+		this.text.position.y = 15; 
+
+	        var parentX = this.parentX = 5;
+	        var parentY = this.parentY = 0;
+	        var childX = this.childX = 0;
+	        var childY = this.childY = 20;
+
+	}
+        this.block.addChild(this.text);
+
+	var isButton = true;	
+	// Basicaly is button is true to spawn a new button when the old block is moved.
 	this.block.mousedown = this.block.touchstart = function(data){
 		// store a refference to the data
 		// The reason for this is because of multitouch
@@ -203,7 +228,10 @@ function block(name){
 			// This is how new blocks are spawned, new block becomes the button and old block gets dragged on to play screen.
 			isButton = false;
 			//console.log("Printing new button underneath! " + blocks + " length:"+blocks.length);
-			blocks.push(new block());
+			blocks.push(new block(name));
+			blocks[blocks.length-1].block.position.x = this.position.x;
+                        blocks[blocks.length-1].block.position.y = this.position.y;
+
 			stage.addChild(blocks[blocks.length-1].block);
 		}
 		this.data = data;
@@ -211,16 +239,17 @@ function block(name){
 		this.dragging = true;
 	};
 
+
 	// set the events for when the mouse is released or a touch is released
 	this.block.mouseup = this.block.mouseupoutside = this.block.touchend = this.block.touchendoutside = function(data){
 
-		this.alpha = 1
+		this.alpha = 1;
 		this.dragging = false;	// set the interaction data to null
 		this.data = null;
-
 		// Gotta check if dragged back to menu. If so delete block.
-		if(this.position.x < (80 + menu.position.x) || this.position.x > (85+300)){
-			if(this.position.y < (menu.position.y + 300)){
+		/*if(this.position.x < (80 + menu.position.x) || this.position.x > (85+300)){*/
+		if( (this.position.x < 40) || (this.position.x > 370)){
+			//if(this.position.y > 380){
 				stage.removeChild(this);
 				//Now must find block in the array and remove it, a tricky thing in javascript.
 				for(var i=0; i<blocks.length; i++){
@@ -230,9 +259,28 @@ function block(name){
 						blocks.splice(i, 1);
 					}
 				}
+			//}
+		}
+
+		//Snap to other buttons drop. iterate through blocks.
+		for(var i=0; i<blocks.length; i++){
+			//if this blocks parrent node is within 10px of childnode of any block.
+			//console.log("placed")
+                        //console.log(" : " + (parentX + this.position.x) + ", " + (blocks[i].childX + blocks[i].block.position.x));
+			if(Math.abs((parentX + this.position.x) - (blocks[i].childX + blocks[i].block.position.x) ) < 25){ 
+				//console.log("CLOSE : " (this.parentX + this.position.x) + ", " + (blocks[i].childX + blocks[i].block.position.x));
+				//console.log("CLOSE");
+				if(Math.abs((parentY + this.position.y) - (blocks[i].block.position.y + blocks[i].childY)) < 40){
+					console.log("SNAP!");
+					this.position.y = (blocks[i].block.position.y + blocks[i].childY);
+                                        this.position.x = (blocks[i].block.position.x + blocks[i].childX);
+					//Alter placement on release.
+				}
 			}
 		}
+
 	};
+
 	// set the callbacks for when the mouse or a touch moves
 	this.block.mousemove = this.block.touchmove = function(data){
 
@@ -242,6 +290,6 @@ function block(name){
 			this.position.x = newPosition.x;
 			this.position.y = newPosition.y;
 		}
-	};*/
+	};
 }
 
