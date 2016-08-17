@@ -5,12 +5,14 @@
 //var stage;
 //var renderer;
 var level_list = {length:20};
-level_list[0]=new Level("","","cow farmer tractor if loop input");
-level_list[1]=new Level("","cow cow","cow farmer loop if");
-level_list[2]=new Level("","","");
-level_list[3]=new Level("","","");
-level_list[4]=new Level("","","");
-level_list[5]=new Level("","","");
+// win condition, input queue, buttons avaliable, description.
+level_list[0]=new Level("","","cow farmer tractor if loop input","Have fun playing with avaliable blocks.");
+level_list[1]=new Level("cow","cow","take", "\nWelcome to Codemon, you can \ndrag blocks from the left menu to \nthe right play area and click the \nyellow button the run your program. \nThe 'take' block will move the \nhighlighted objects to your inventory. \n\nCollect the cow to complete this \nlevel.");
+level_list[2]=new Level("cow cow cow","cow cow cow cow","take", "Multiple blocks can be placed \ndown, blocks are read as the red \nbar moves down across the screen. \nSimular to a book the game \nwill read blocks top to bottom. \n\nCollect three cows to complete this \nlevel.");
+level_list[3]=new Level("cow cow cow","cow farmer cow cow","take skip", "Now we introduce the 'skip' \nblock which will skip over the \ncurrently selected object so you \ncan take only the objects you want.\n\nAgain collect three cows, but avoid \ncollecting the farmer.");
+level_list[4]=new Level("tractor farmer cow","farmer tractor farmer farmer cow","take skip", "Collect a tractor, a farmer and \na cow to complete this level.");
+//todo later
+level_list[5]=new Level("","","", "");
 level_list[6]="";
 level_list[7]="";
 level_list[8]="";
@@ -27,10 +29,10 @@ level_list[18]="";
 level_list[19]="";
 level_list[20]="";
 
-
 // Arrays that exist to iterate for cleanup between levels.
 var blocks=[];
 var buttons=[];
+var graphics=[];
 // Holds the name of current menu, used to know what menu you are currently, we start on main menu.
 var menu = "main";
 var title, bar;
@@ -43,12 +45,12 @@ var input, output;
 var stage, canvas, renderer;
 
 
-function Level(win_condition, input_queue, block_list){
-	this.win_condition = win_condition;
+function Level(win_condition, input_queue, block_list, description){
+	this.win_condition = win_condition.split(" ");
 	this.input_queue = input_queue;
 	this.block_list = block_list;
-	// queue not implemented yet.
-	//this.input_queue; 
+	this.description = description;
+	// queue not implemented yet.	//this.input_queue; 
 }
 
 
@@ -57,12 +59,10 @@ function button(text, color, x, y, width, height){
         this.graphic.beginFill(color);
         this.graphic.drawRect(x, y, width, height);
         stage.addChild(this.graphic);   
-
         this.text = new PIXI.Text(''+text,{font : '14px Arial', fill : 0xff1010, align : 'center'});
 	this.text.position.x = x + 8;
 	this.text.position.y = y + 10;
 	this.graphic.addChild(this.text);
-
 	//console.log("Button created!");
 }
 
@@ -71,7 +71,8 @@ function button(text, color, x, y, width, height){
 function run(){
 
         console.log("Attempting Setup");
-        stage = new PIXI.Stage(0x66FF99);
+        //stage = new PIXI.Stage(0x66FF99)
+	stage = new PIXI.Stage(0xFFF);
         canvas = document.getElementById("game");
         renderer = PIXI.autoDetectRenderer(800, 300,{view: canvas});
         document.body.appendChild(renderer.view);
@@ -146,11 +147,11 @@ function level_select(){
 	        holder = new button("level_"+i, 0xff9900, (120*i), 60, 90, 30);
         	holder.graphic.buttonMode = true;
         	holder.graphic.interactive = true;
+		holder.graphic.id = i;
         	holder.graphic.click = function(mouseData){
 
-                	console.log("Loading " + this.text + "...");
-// PLACE HOLDER HARD CODED LEVEL VALUE.
-                	menu_change("level_1");
+                	console.log("Loading Level" + this.id + "...");
+                	menu_change("level_"+this.id);
         	}
 	        buttons.push(holder);
 		//menu_change("level_"+i):
@@ -173,24 +174,65 @@ function options(){
 // function needed to print out the blocks and setup the challenge for each level.
 function load_level(level_num){
 
+	var popup;
+
 	//Here is the sidebar that will hold the blocks.
 	var side = new PIXI.Graphics();
 	side.beginFill(0xFFFF00);
 	side.drawRect(0, 0, 80, 300);
 	stage.addChild(side);
+	graphics.push(side);
 
 	// simple back button will take one to previous menu.
-        var holder = new button("Back", 0xff9900, 20, 260, 90, 30);
-        holder.graphic.buttonMode = true;
-        holder.graphic.interactive = true;
-        holder.graphic.click = function(mouseData){
+        var back_button = new button("Back", 0xff9900, 50, 260, 60, 30);
+        back_button.graphic.buttonMode = true;
+        back_button.graphic.interactive = true;
+        back_button.graphic.click = function(mouseData){
                 console.log("Level select");
                 menu_change("level select");
         }
-
         // pushing to buttons will place on a global array for cleaning up between states.  
-        buttons.push(holder);
+        buttons.push(back_button);
 
+	// help button with popup quest menu.
+        var help_button = new button("Help", 0xff9900, 130, 260, 60, 30);
+        help_button.graphic.buttonMode = true;
+        help_button.graphic.interactive = true;
+        help_button.graphic.click = function(mouseData){
+                console.log("Help menu opening...");
+                if(popup.visible == true){
+                        popup.visible = false;
+                }else{ 
+                        popup.visible = true;
+                }
+
+        }
+        // pushing to buttons will place on a global array for cleaning up between states.  
+        buttons.push(help_button);
+
+        // reset board
+        var reset = new button("Reset", 0xff9900, 210, 260, 60, 30);
+	reset.graphic.value = level_num;
+        reset.graphic.buttonMode = true;
+        reset.graphic.interactive = true;
+        reset.graphic.click = function(mouseData){
+                console.log("Reseting...");
+                menu_change("level_"+this.value);
+                //menu_change("level_"+this.value);
+        }
+        // pushing to buttons will place on a global array for cleaning up between states.  
+        buttons.push(reset);
+
+        // reset board                       
+        var clear = new button("Clear", 0xff9900, 290, 260, 60, 30);
+        clear.graphic.buttonMode = true;
+        clear.graphic.interactive = true;
+        clear.graphic.click = function(mouseData){
+                console.log("Clearing blocks..");
+		clear_board();
+        }
+        // pushing to buttons will place on a global array for cleaning up between states.  
+        buttons.push(clear);
 	// This bar is the interpreter, as it moves from top to bottom it's collisions will trigger events on the game.
         bar = new PIXI.Graphics();
         bar.beginFill(0xFF0000);
@@ -228,16 +270,55 @@ function load_level(level_num){
         //blocks.push(new block());
         //stage.addChild(blocks[blocks.length-1].block);
 
+	//alien spaceship.
+	var tex = PIXI.Texture.fromImage("res/ship.png");
+        ship = new PIXI.Sprite(tex);
+        ship.scale.x = 0.25;
+        ship.scale.y = 0.25;
+	ship.position.x = 600;
+	ship.position.y = 60;
+	stage.addChild(ship);	
+	graphics.push(ship);
+
 	// place queue in here.
 	var input_queue = current_level.input_queue;
 	input_queue = input_queue.split(" ");
 	populate_queue(input_queue);
-        input.container.position.x = 550;
+        input.container.position.x = 630;
         input.container.position.y = 220;
-
+	input.target.visible = true;
+	//buttons.push(input);
+	//populate_queue(input_queue);
 	output = new graphical_queue();
 	output.container.position.x = 480;
-        output.container.position.y = 10;  
+        output.container.position.y = 10;
+	//buttons.push(output);  
+        //..Popup quest box, togglable.
+        popup = new PIXI.Graphics();
+        popup.beginFill(0x33cc33);
+        popup.drawRect(250, 30, 200, 200);
+        stage.addChild(popup);
+        //graphics.push(popup);
+        var text = new PIXI.Text(current_level.description,{font : '12px Arial', fill : 0xff1010, align : 'justified'});
+        text.position.x = 255;
+        text.position.y = 35; 
+        popup.addChild(text);
+
+        var okay_button = new PIXI.Graphics();
+        okay_button.beginFill(0xff3300);
+        okay_button.drawCircle(440, 40, 10);
+        okay_button.buttonMode = true;
+        okay_button.interactive = true;
+        okay_button.click = okay_button.tap = function(data){
+                //run_interpreter();
+		if(this.parent.visible == true){
+			this.parent.visible = false;
+		}else{
+			this.parent.visible = true;
+		}
+        }
+        popup.addChild(okay_button);
+	graphics.push(popup);
 }
 
 //Param is the name of the menu being changed in. Can either be main, level+num, level select, options or free play.
@@ -257,19 +338,30 @@ function menu_change(new_menu){
 	// next we remove any blocks on board.
         while(true){
                 if(blocks.length > 0){
-                        stage.removeChild(blocks.pop().graphic);
+                        stage.removeChild(blocks.pop().block);
                 }else{
                         break;
                 }
         }
         console.log("Blocks cleared!");
 
-	// then clean up misc
+	//cearing graphics
+        while(true){
+                if(graphics.length > 0){
+                        stage.removeChild(graphics.pop());
+                }else{
+                        break;
+                }
+        }
+        console.log("Graphics cleared!");
+
+	// then clean up misc will code this away later.
 	if(menu == "main" || menu == "level select"){
+
 		stage.removeChild(title);
 	}else if(menu.includes("level_")){
+
 		stage.removeChild(bar);
-		stage.removeChild(side);
 	}
 
 	//Second we place boiler plate based on new menu, if it's a game level we need monsters, if main menu need title, etc. 
@@ -302,31 +394,48 @@ function graphical_queue(){
 
 	this.queue = [];
 	this.container= new PIXI.Graphics();
-	this.container.beginFill(0x9b59b6); // Purple 
+	//this.container.beginFill(0x9b59b6); // Purple 
 	this.container.drawRect(0, 0, 430, 70); // drawRect(x, y, width, height)
-	this.container.endFill();
+	//this.container.endFill();
 	stage.addChild(this.container);
+        this.target = new PIXI.Graphics();
+        this.target.beginFill(0xffff66);
+        this.target.drawCircle(35, 30, 40);
+	this.target.visible = false;
+	this.container.addChild(this.target);
+
+	graphics.push(this.container);
 
 	this.push = function(sprite){
-		this.queue.push(sprite);
-		sprite.position.x = 80 * (this.queue.length-1);
-		this.container.addChild(sprite);
-		//this.container.sprite.position.x *= (this.queue.length-1);
-		console.log("added a sprite!");
+		if(sprite != null){
+			this.queue.push(sprite);
+			sprite.position.x = 80 * (this.queue.length-1);
+			this.container.addChild(sprite);
+			//this.container.sprite.position.x *= (this.queue.length-1);
+			console.log("added a sprite!");
+		}else{
+			console.log("...sprite was null.");
+		}
 	}
 
         this.pop = function(){
 
-		this.container.removeChild(this.queue[0]);
-		//Must loop through and move all characters to the left to fill in space. coelece.. coalese.. 
-		var holder;
-		for(var i=0; i<this.queue.length; i++){
-			this.queue[i].position.x -= 80;
+		if(this.queue.length > 0){
+			this.container.removeChild(this.queue[0]);
+			//Must loop through and move all characters to the left to fill in space. coelece.. coalese.. 
+			var holder;
+			if(this.queue.length > 0){
+				for(var i=0; i<this.queue.length; i++){
+					this.queue[i].position.x -= 80;
+				}
+			}
+			console.log("removed a sprite!");
+			//return this.queue.pop();
+			return this.queue.shift();
+		}else{
+			console.log("..queue empty.");
 		}
-		console.log("removed a sprite!");
-		return this.queue.pop();
         }
-
 }
 
 function populate_queue(input_queue){
@@ -337,8 +446,22 @@ function populate_queue(input_queue){
 	for(i in input_queue){
 		//console.log("pushing " + i);
 		//var tex = PIXI.Texture.fromImage("res/" + i + ".png");
-                var tex = PIXI.Texture.fromImage("res/cow.png");
-		holder = new PIXI.Sprite(tex);
+		var tex;
+		if(input_queue[i] == "cow"){
+
+                	tex = PIXI.Texture.fromImage("res/cow.png");
+	                holder = new PIXI.Sprite(tex);
+			holder.name = "cow";
+		}else if(input_queue[i] == "farmer"){
+			tex = PIXI.Texture.fromImage("res/farmer.png");
+                        holder = new PIXI.Sprite(tex);
+                        holder.name = "farmer";
+		}else{
+			tex = PIXI.Texture.fromImage("res/tractor.png");
+                        holder = new PIXI.Sprite(tex);
+                        holder.name = "tractor";
+		}
+		//holder = new PIXI.Sprite(tex);
 		holder.scale.x = 0.15;
                 holder.scale.y = 0.15;
 		input.push(holder);
@@ -354,18 +477,34 @@ function update(){
 			running = false;
 			bar.position.y = 0;
 			//check for win conditions.
-
+			var i, did_win = true;
+			if((output.queue.length>0) && (current_level.win_condition.length == output.queue.length)){
+				for(i in current_level.win_condition){
+					if(current_level.win_condition[i] != output.queue[i].name){
+						console.log(""+output.queue[i].name +" "+ current_level.win_condition[i]);
+						did_win = false;
+					}
+				}
+				if(did_win){
+					//print text
+					console.log("YOU DID IT!");
+				}else{
+					console.log("YOU LOSE");
+				}
+			}
 		}else{
 			// Increment y position of bar.
 			//console.log("Running");
-			bar.position.y += 1;
+			bar.position.y += 2;
 			for(var i=0; i<blocks.length; i++){
 				//console.log("Checking..");
 				if( hitTest(blocks[i].block, bar) ){
 					console.log(" "+blocks[i].name);
-					if(blocks[i].name == "input"){
+					if(blocks[i].name == "take"){
 						output.push(input.pop());
-					}
+					}else if(blocks[i].name == "skip"){
+                                                var temp = input.pop();
+                                        }
 				}
 			}
 		}

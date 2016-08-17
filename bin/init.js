@@ -162,16 +162,11 @@ function block(name){
 
 	// Need ot give them id for removal purposes, may make array in hash map later.
 	var id = id_counter;
-	this.id = id;
+	this.id = id_counter;
+	id_counter++;
 	this.name = name;
 	var name = name;
 	id_counter++;
-
-	var parentX = this.parentX = 10;
-        var parentY = this.parentY = 2;
-	var childX = this.childX = 50;
-        var childY = this.childY = 18;
-
         this.text = new PIXI.Text(this.name,{font : '30px Arial', fill : 0xff1010, align : 'center'});
 
 	if(name == "if"){
@@ -213,10 +208,10 @@ function block(name){
 	        var parentX = this.parentX = 5;
 	        var parentY = this.parentY = 0;
 	        var childX = this.childX = 0;
-	        var childY = this.childY = 20;
-
+	        var childY = this.childY = 50;
 	}
         this.block.addChild(this.text);
+	//blocks[blocks.length] = this.block;
 
 	var isButton = true;	
 	// Basicaly is button is true to spawn a new button when the old block is moved.
@@ -234,6 +229,8 @@ function block(name){
 
 			stage.addChild(blocks[blocks.length-1].block);
 		}
+		this.parent.removeChild(this);
+		stage.addChild(this);
 		this.data = data;
 		this.alpha = 0.9;
 		this.dragging = true;
@@ -267,14 +264,23 @@ function block(name){
 			//if this blocks parrent node is within 10px of childnode of any block.
 			//console.log("placed")
                         //console.log(" : " + (parentX + this.position.x) + ", " + (blocks[i].childX + blocks[i].block.position.x));
-			if(Math.abs((parentX + this.position.x) - (blocks[i].childX + blocks[i].block.position.x) ) < 25){ 
-				//console.log("CLOSE : " (this.parentX + this.position.x) + ", " + (blocks[i].childX + blocks[i].block.position.x));
-				//console.log("CLOSE");
-				if(Math.abs((parentY + this.position.y) - (blocks[i].block.position.y + blocks[i].childY)) < 40){
-					console.log("SNAP!");
-					this.position.y = (blocks[i].block.position.y + blocks[i].childY);
-                                        this.position.x = (blocks[i].block.position.x + blocks[i].childX);
-					//Alter placement on release.
+			if(id != blocks[i].id){
+				
+	                        if(Math.abs((parentX + this.position.x) - (blocks[i].childX + blocks[i].block.position.x) ) < 20){ 
+					//console.log("CLOSE : " (this.parentX + this.position.x) + ", " + (blocks[i].childX + blocks[i].block.position.x));
+					//console.log("CLOSE");
+					if(Math.abs((parentY + this.position.y) - (blocks[i].block.position.y + blocks[i].childY)) < 30){
+						console.log("SNAPPED to: " + blocks[i].name + "   ids: " + id + ", " + blocks[i].id);
+						//this.position.y = (blocks[i].block.position.y + blocks[i].childY);
+       	                                	//this.position.x = (blocks[i].block.position.x + blocks[i].childX);
+						//blocks[i].block.addChild(this);
+						stage.removeChild(this);
+						this.scale.x = this.scale.y = 1;
+						this.position.x = blocks[i].childX;
+						this.position.y = blocks[i].childY;
+						blocks[i].block.addChild(this);
+						//Alter placement on release.
+					}
 				}
 			}
 		}
