@@ -144,7 +144,7 @@ function hitTest(a, b){
         return true;
       }
     }*/
-	if(Math.abs(a.position.y - b.position.y) < 1){
+	/*if(Math.abs(a.position.y - b.position.y) < 1){
 		if(a.position.x > 80){
 		//	return true;
 		//if( (a.position.x >= b.position.x) && (a.position.x <= (b.position.x + b.width))){
@@ -152,7 +152,34 @@ function hitTest(a, b){
 		//if(a.position.y <= (b.position.y + b.height)){
 			return true;
 		}
+	}*/
+
+	if(a.position.x > b.position.x){
+		if((a.position.y == b.position.y)){
+			if(a.position.x > 80){
+				console.log(" how it looks"+ a.position.x + "==" + b.position.x);
+				return true;
+			}
+		}
 	}
+
+	/*console.log("a positions	" + a.position.x + ", "+ a.position.y);
+        //console.log(" "+a.position.x + " " + a.width + " "+ b.position.x +" "+ b.width);
+	if(a.position.x <= (b.position.x + b.height) ){
+
+                console.log("made it 1 "+a.position.x + " "+ b.position.x +" "+ b.width);
+		if(((a.position.x + a.position.height) >= b.position.x)){
+
+			console.log("made it 2 "+a.position.x + " " + a.width + " "+ b.position.x +" "+ b.width);
+			if((a.position.y < (b.position.y + b.width))){
+ 
+				console.log("made it 3 "+a.position.x + " " + a.width + " "+ b.position.x +" "+ b.width);
+				if(((a.position.y + a.position.width) >= b.position.y) ){
+					return true;
+				}
+			}
+		}
+	}*/
 	return false;
 }
 
@@ -168,6 +195,12 @@ function block(name){
 	var name = name;
 	id_counter++;
         this.text = new PIXI.Text(this.name,{font : '30px Arial', fill : 0xff1010, align : 'center'});
+	this.block;
+        // This bar is the interpreter, as it moves from top to bottom it's collisions will trigger events on the game.
+        var hit = this.hit = new PIXI.Graphics();
+        var hit = this.hit.beginFill(0xFF0000);
+        var hit = this.hit.drawRect(0, 0, 10, 50);
+
 
 	if(name == "if"){
                 // Generate pixi sprite.
@@ -208,8 +241,9 @@ function block(name){
 	        var parentX = this.parentX = 5;
 	        var parentY = this.parentY = 0;
 	        var childX = this.childX = 0;
-	        var childY = this.childY = 50;
+	        var childY = this.childY = 21;
 	}
+
         this.block.addChild(this.text);
 	//blocks[blocks.length] = this.block;
 
@@ -270,15 +304,16 @@ function block(name){
 					//console.log("CLOSE : " (this.parentX + this.position.x) + ", " + (blocks[i].childX + blocks[i].block.position.x));
 					//console.log("CLOSE");
 					if(Math.abs((parentY + this.position.y) - (blocks[i].block.position.y + blocks[i].childY)) < 30){
-						console.log("SNAPPED to: " + blocks[i].name + "   ids: " + id + ", " + blocks[i].id);
+						//console.log("SNAPPED to: " + blocks[i].name + "   ids: " + id + ", " + blocks[i].id);
 						//this.position.y = (blocks[i].block.position.y + blocks[i].childY);
        	                                	//this.position.x = (blocks[i].block.position.x + blocks[i].childX);
 						//blocks[i].block.addChild(this);
-						stage.removeChild(this);
-						this.scale.x = this.scale.y = 1;
-						this.position.x = blocks[i].childX;
-						this.position.y = blocks[i].childY;
-						blocks[i].block.addChild(this);
+						//stage.removeChild(this);
+						//this.scale.x = this.scale.y = 1;
+						this.position.x = blocks[i].block.position.x + (blocks[i].childX);
+						this.position.y = blocks[i].block.position.y + (blocks[i].childY);
+						console.log("snapped pos: " + this.position.x +", "+ this.position.y);
+						//blocks[i].block.addChild(this);
 						//Alter placement on release.
 					}
 				}
@@ -291,10 +326,14 @@ function block(name){
 	this.block.mousemove = this.block.touchmove = function(data){
 
 		if(this.dragging){
+
 			// need to get parent coords..
 			var newPosition = this.data.getLocalPosition(this.parent);
 			this.position.x = newPosition.x;
 			this.position.y = newPosition.y;
+			hit.position.x = newPosition.x;
+			hit.position.y = newPosition.y;
+			//console.log("NEW POSITION " + this.position.x + ", "+this.position.y);
 		}
 	};
 }

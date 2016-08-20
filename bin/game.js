@@ -236,7 +236,7 @@ function load_level(level_num){
 	// This bar is the interpreter, as it moves from top to bottom it's collisions will trigger events on the game.
         bar = new PIXI.Graphics();
         bar.beginFill(0xFF0000);
-        bar.drawRect(80, 0, 320, 15);
+        bar.drawRect(82, 0, 320, 15);
 	// Circle button that launches the interpreter.
 	var run_button = new PIXI.Graphics();
         run_button.beginFill(0xFFF000);
@@ -453,10 +453,12 @@ function populate_queue(input_queue){
 	                holder = new PIXI.Sprite(tex);
 			holder.name = "cow";
 		}else if(input_queue[i] == "farmer"){
+
 			tex = PIXI.Texture.fromImage("res/farmer.png");
                         holder = new PIXI.Sprite(tex);
                         holder.name = "farmer";
 		}else{
+
 			tex = PIXI.Texture.fromImage("res/tractor.png");
                         holder = new PIXI.Sprite(tex);
                         holder.name = "tractor";
@@ -488,6 +490,11 @@ function update(){
 				if(did_win){
 					//print text
 					console.log("YOU DID IT!");
+				        var win_banner = new PIXI.Text('You did it!',{font : '25px Arial', fill : 0xff1010, align : 'justified'});
+        				win_banner.position.x = 555;
+        				win_banner.position.y = 155; 
+        				stage.addChild(win_banner);
+					graphics.push(win_banner);
 				}else{
 					console.log("YOU LOSE");
 				}
@@ -495,7 +502,7 @@ function update(){
 		}else{
 			// Increment y position of bar.
 			//console.log("Running");
-			bar.position.y += 2;
+			bar.position.y += 1;
 			for(var i=0; i<blocks.length; i++){
 				//console.log("Checking..");
 				if( hitTest(blocks[i].block, bar) ){
