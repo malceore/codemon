@@ -6,7 +6,7 @@
 //var renderer;
 var level_list = {length:20};
 // win condition, input queue, buttons avaliable, description.
-level_list[0]=new Level("","","cow farmer tractor if loop input","Have fun playing with avaliable blocks.");
+level_list[0]=new Level("","","loop take skip if","Have fun playing with avaliable blocks.");
 level_list[1]=new Level("cow","cow","take", "\nWelcome to Codemon, you can \ndrag blocks from the left menu to \nthe right play area and click the \nyellow button the run your program. \nThe 'take' block will move the \nhighlighted objects to your inventory. \n\nCollect the cow to complete this \nlevel.");
 level_list[2]=new Level("cow cow cow","cow cow cow cow","take", "Multiple blocks can be placed \ndown, blocks are read as the red \nbar moves down across the screen. \nSimular to a book the game \nwill read blocks top to bottom. \n\nCollect three cows to complete this \nlevel.");
 level_list[3]=new Level("cow cow cow","cow farmer cow cow","take skip", "Now we introduce the 'skip' \nblock which will skip over the \ncurrently selected object so you \ncan take only the objects you want.\n\nAgain collect three cows, but avoid \ncollecting the farmer.");
@@ -104,7 +104,7 @@ function main_menu(){
         }
 	buttons.push(holder);
 
-        //var options = new PIXI.Graphics();
+        /*var options = new PIXI.Graphics();
         holder = new button("Options", 0xff9900, 125, 230, 90, 30);
         holder.graphic.buttonMode = true;
         holder.graphic.interactive = true;
@@ -112,7 +112,7 @@ function main_menu(){
                 console.log("Options");
 		menu_change("options");
         }
-        buttons.push(holder);
+        buttons.push(holder);*/
 
         title = new PIXI.Text('Codemon',{font : '50px Arial', fill : 0xff1010, align : 'center'});
         title.position.x = 70;
@@ -248,6 +248,7 @@ function load_level(level_num){
 	}
 	bar.addChild(run_button);
         stage.addChild(bar);
+	graphics.push(bar);
 
 	// Setting up blocks that need to be in this level.
 	current_level = level_list[level_num];
@@ -304,11 +305,14 @@ function load_level(level_num){
         text.position.y = 35; 
         popup.addChild(text);
 
-        var okay_button = new PIXI.Graphics();
-        okay_button.beginFill(0xff3300);
-        okay_button.drawCircle(440, 40, 10);
+        var okay_button = new PIXI.Text("X",{font : '15px Arial', fill : 0xff0000, align : 'justified'});
+        //var okay_button = new PIXI.Graphics();
+        //okay_button.beginFill(0xff3300);
+        //okay_button.drawCircle(440, 40, 10);
         okay_button.buttonMode = true;
         okay_button.interactive = true;
+	okay_button.position.x = 435;
+	okay_button.position.y = 38;
         okay_button.click = okay_button.tap = function(data){
                 //run_interpreter();
 		if(this.parent.visible == true){
@@ -359,10 +363,10 @@ function menu_change(new_menu){
 	if(menu == "main" || menu == "level select"){
 
 		stage.removeChild(title);
-	}else if(menu.includes("level_")){
+	}//else if(menu.includes("level_")){
 
-		stage.removeChild(bar);
-	}
+	//	stage.removeChild(bar);
+	//}
 
 	//Second we place boiler plate based on new menu, if it's a game level we need monsters, if main menu need title, etc. 
 	if(new_menu.includes("level_")){
@@ -511,7 +515,38 @@ function update(){
 						output.push(input.pop());
 					}else if(blocks[i].name == "skip"){
                                                 var temp = input.pop();
-                                        }
+                                        }else if(blocks[i].name == "loop"){
+						
+						if(blocks[i].ids_of_children != null){
+
+							//console.log("We got a loop here.");
+							var iterate = blocks[i].value;
+							//Need to find the child block.
+							var child = null;
+							for(j in blocks){
+
+								//console.log("  "+blocks[j].block.id + " == " + blocks[i].ids_of_children);
+								if(blocks[j].block.id == blocks[i].ids_of_children[0]){ // hardcoded, will allow for more blocks later.
+									child = blocks[j];
+								}
+							}
+							//Next need to complete child block for the number of iterations given.
+							for(var k=0; k <= iterate; k++){
+
+								if(child.name == "take"){
+									console.log("  take:"+k);
+									output.push(input.pop());
+								}else if(child.name == "skip"){
+									var temp = input.pop();
+								}else{
+									console.log("	What is this block?");
+								}
+							}
+							//Finally we move the red bar past the loop so that it does not try to run the loop or it's child again.
+							bar.position.y = (child.block.position.y + child.block.height);
+						}
+
+					}
 				}
 			}
 		}

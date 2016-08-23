@@ -189,18 +189,16 @@ function block(name){
 
 	// Need ot give them id for removal purposes, may make array in hash map later.
 	var id = id_counter;
-	this.id = id_counter;
-	id_counter++;
+	//this.block.id = id_counter;
+	//id_counter++;
 	this.name = name;
 	var name = name;
 	id_counter++;
         this.text = new PIXI.Text(this.name,{font : '30px Arial', fill : 0xff1010, align : 'center'});
 	this.block;
+	//this.block.id = id_counter;
+	//id_counter++;
         // This bar is the interpreter, as it moves from top to bottom it's collisions will trigger events on the game.
-        var hit = this.hit = new PIXI.Graphics();
-        var hit = this.hit.beginFill(0xFF0000);
-        var hit = this.hit.drawRect(0, 0, 10, 50);
-
 
 	if(name == "if"){
                 // Generate pixi sprite.
@@ -214,8 +212,14 @@ function block(name){
                 this.text.position.y = 25; 
 
 	}else if(name == "loop"){
+
+		// This holds the amount of times a loop should repeat.
+		var value = this.value = 1;
+
+		this.ids_of_children = [];
+
                 // Generate pixi sprite.
-                this.block = new PIXI.Sprite.fromImage('res/act_loop.png');     
+                this.block = new PIXI.Sprite.fromImage('res/loop.png');     
                 this.block.scale.x = this.block.scale.y = 0.4;
                 this.block.buttonMode = true;
                 this.block.interactive = true;
@@ -223,10 +227,43 @@ function block(name){
                 this.text.position.x = 100;
                 this.text.position.y = 30; 
 
-                var parentX = this.parentX = 0;
-                var parentY = this.parentY = 5;
-                var childX = this.childX = 0;
-                var childY = this.childY = 25;
+                var parentX = this.parentX = -10;
+                var parentY = this.parentY = 0;
+                var childX = this.childX = 72;
+                var childY = this.childY = 8;
+
+		var plus = new PIXI.Text("X",{font : '40px Arial', fill : 0xff0000, align : 'justified'});
+        	//var okay_button = new PIXI.Graphics();
+        	//okay_button.beginFill(0xff3300);
+        	//okay_button.drawCircle(440, 40, 10);
+        	plus.buttonMode = true;
+        	plus.interactive = true;
+                plus.rotation = 18;
+        	plus.position.x = 218;
+        	plus.position.y = 44;
+
+        	plus.click = plus.tap = function(data){
+			console.log(value);
+			value++;
+			minus.setText(value + "    -");
+		}
+		this.block.addChild(plus);
+
+
+                var minus = new PIXI.Text(value+"    -",{font : '45px Arial', fill : 0xff0000, align : 'justified'});
+                minus.buttonMode = true;
+                minus.interactive = true;
+                minus.position.x = 280;
+                minus.position.y = 24;
+
+                minus.click = minus.tap = function(data){
+                        console.log(value);
+			value--;
+			minus.setText(value+"    -");
+                }
+                this.block.addChild(minus);
+
+
 	}else{
 		// It's a generic variable then.
 		this.block = new PIXI.Sprite.fromImage('res/act_variable.png');	
@@ -244,10 +281,13 @@ function block(name){
 	        var childY = this.childY = 21;
 	}
 
+        this.block.id = id_counter;
+        id_counter++;
         this.block.addChild(this.text);
 	//blocks[blocks.length] = this.block;
 
-	var isButton = true;	
+	var isButton = true;
+	this.block.isButton = true;	
 	// Basicaly is button is true to spawn a new button when the old block is moved.
 	this.block.mousedown = this.block.touchstart = function(data){
 		// store a refference to the data
@@ -256,13 +296,34 @@ function block(name){
 		if(isButton){
 			// This is how new blocks are spawned, new block becomes the button and old block gets dragged on to play screen.
 			isButton = false;
+			this.isButton = false;
 			//console.log("Printing new button underneath! " + blocks + " length:"+blocks.length);
 			blocks.push(new block(name));
 			blocks[blocks.length-1].block.position.x = this.position.x;
                         blocks[blocks.length-1].block.position.y = this.position.y;
 
 			stage.addChild(blocks[blocks.length-1].block);
+		}else{
+
+			//now need to cleanup any connection to parrent when picked up.
+			for(i in blocks){
+				//console.log("  "+blocks[i]);
+				//If we have a loop block we need to check all to see if this blocks ID is in his child ids list.
+				if(blocks[i].name == "loop"){
+					for(j in blocks[i].ids_of_children){
+						//console.log("  " + blocks[i].ids_of_children[j] );
+						if(this.id == blocks[i].ids_of_children[j]){
+							console.log("Removing child " + blocks[j].block.id);
+							//blocks[i].ids_of_children.slice(j,1);
+							// Hardcoded, will fix later too..
+							blocks[i].ids_of_children = [];
+							//console.log("  " + blocks[i].ids_of_children);
+						}
+					}
+				}
+			}
 		}
+
 		this.parent.removeChild(this);
 		stage.addChild(this);
 		this.data = data;
@@ -280,17 +341,16 @@ function block(name){
 		// Gotta check if dragged back to menu. If so delete block.
 		/*if(this.position.x < (80 + menu.position.x) || this.position.x > (85+300)){*/
 		if( (this.position.x < 40) || (this.position.x > 370)){
-			//if(this.position.y > 380){
-				stage.removeChild(this);
-				//Now must find block in the array and remove it, a tricky thing in javascript.
-				for(var i=0; i<blocks.length; i++){
-					//console.log("Found this!" + blocks[i].id + " = " +id);
-					if(blocks[i].id == id){
-						//console.log("Found");
-						blocks.splice(i, 1);
-					}
+			//stage.removeChild(this);
+			//Now must find block in the array and remove it, a tricky thing in javascript.
+			for(var i=0; i<blocks.length; i++){
+				//console.log("Found this!" + blocks[i].id + " = " +id);
+				if((blocks[i].id == id) && (blocks[i].block.isButton == false)){
+					//console.log("Found");
+					blocks.splice(i, 1);
+					stage.removeChild(this);
 				}
-			//}
+			}
 		}
 
 		//Snap to other buttons drop. iterate through blocks.
@@ -310,6 +370,12 @@ function block(name){
 						//blocks[i].block.addChild(this);
 						//stage.removeChild(this);
 						//this.scale.x = this.scale.y = 1;
+						//Loop is a special case because being one of it's children changes how you are read in.
+						if(blocks[i].name == "loop"){
+							console.log("added child!" + this.id);
+							blocks[i].ids_of_children.push(this.id);
+						}
+
 						this.position.x = blocks[i].block.position.x + (blocks[i].childX);
 						this.position.y = blocks[i].block.position.y + (blocks[i].childY);
 						console.log("snapped pos: " + this.position.x +", "+ this.position.y);
@@ -331,8 +397,8 @@ function block(name){
 			var newPosition = this.data.getLocalPosition(this.parent);
 			this.position.x = newPosition.x;
 			this.position.y = newPosition.y;
-			hit.position.x = newPosition.x;
-			hit.position.y = newPosition.y;
+			//hit.position.x = newPosition.x;
+			//hit.position.y = newPosition.y;
 			//console.log("NEW POSITION " + this.position.x + ", "+this.position.y);
 		}
 	};
