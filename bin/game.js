@@ -6,14 +6,14 @@
 //var renderer;
 var level_list = {length:20};
 // win condition, input queue, buttons avaliable, description.
-level_list[0]=new Level("","","loop take skip if","Have fun playing with avaliable blocks.");
+level_list[0]=new Level("","","loop take skip if","\n\nHave fun playing with avaliable blocks.");
 level_list[1]=new Level("cow","cow","take", "\nWelcome to Codemon, you can \ndrag blocks from the left menu to \nthe right play area and click the \nyellow button the run your program. \nThe 'take' block will move the \nhighlighted objects to your inventory. \n\nCollect the cow to complete this \nlevel.");
-level_list[2]=new Level("cow cow cow","cow cow cow cow","take", "Multiple blocks can be placed \ndown, blocks are read as the red \nbar moves down across the screen. \nSimular to a book the game \nwill read blocks top to bottom. \n\nCollect three cows to complete this \nlevel.");
-level_list[3]=new Level("cow cow cow","cow farmer cow cow","take skip", "Now we introduce the 'skip' \nblock which will skip over the \ncurrently selected object so you \ncan take only the objects you want.\n\nAgain collect three cows, but avoid \ncollecting the farmer.");
-level_list[4]=new Level("tractor farmer cow","farmer tractor farmer farmer cow","take skip", "Collect a tractor, a farmer and \na cow to complete this level.");
-//todo later
-level_list[5]=new Level("","","", "");
+level_list[2]=new Level("cow cow cow","cow cow cow cow","take", "\nMultiple blocks can be placed \ndown, blocks are read as the red \nbar moves down across the screen. \nSimular to a book the game \nwill read blocks top to bottom. \n\nCollect three cows to complete this \nlevel.");
+level_list[3]=new Level("cow cow cow","cow farmer cow cow","take skip", "\nNow we introduce the 'skip' \nblock which will skip over the \ncurrently selected object so you \ncan take only the objects you want.\n\nAgain collect three cows, but avoid \ncollecting the farmer.");
+level_list[4]=new Level("tractor farmer cow","farmer tractor farmer farmer cow","take skip", "\nCollect a tractor, a farmer and \na cow to complete this level.");
+level_list[5]=new Level("tractor tractor tractor", "tractor tracto tractor","take loop", "\nIn this level we introduce the \n'Loop' block. You can attach a \nblock to the loop block and run \nthe program to see that it will take \nnormally. But if you increase the \nnumber on the loop by clicking the \nplus arrow next to the number and \nrun the program it will repeat the \naction of the attached block equal to \nthe value inside the loop. \n\nTry collecting three tractors using a \nloop and a take block together.");
 level_list[6]="";
+//
 level_list[7]="";
 level_list[8]="";
 level_list[9]="";
@@ -142,7 +142,7 @@ function level_select(){
 
 	//loop prints out all possible levels to attempt.
 	//var holder;
-	for(var i=1; i<(level_list.length/4); i++){
+	for(var i=1; i<6; i++){//(level_list.length/4); i++){
 
 	        holder = new button("level_"+i, 0xff9900, (120*i), 60, 90, 30);
         	holder.graphic.buttonMode = true;
@@ -530,20 +530,24 @@ function update(){
 									child = blocks[j];
 								}
 							}
-							//Next need to complete child block for the number of iterations given.
-							for(var k=0; k <= iterate; k++){
+							if(child != null){
+								//Next need to complete child block for the number of iterations given.
+								for(var k=0; k <= iterate; k++){
 
-								if(child.name == "take"){
-									console.log("  take:"+k);
-									output.push(input.pop());
-								}else if(child.name == "skip"){
-									var temp = input.pop();
-								}else{
-									console.log("	What is this block?");
+									if(child.name == "take"){
+										console.log("  take:"+k);
+										output.push(input.pop());
+									}else if(child.name == "skip"){
+										var temp = input.pop();
+									}else{
+										console.log("	What is this block?");
+									}
 								}
+								//Finally we move the red bar past the loop so that it does not try to run the loop or it's child again.
+								bar.position.y = (child.block.position.y + child.block.height);
+							}else{
+								console.log("child was null, no child exists.");
 							}
-							//Finally we move the red bar past the loop so that it does not try to run the loop or it's child again.
-							bar.position.y = (child.block.position.y + child.block.height);
 						}
 
 					}
