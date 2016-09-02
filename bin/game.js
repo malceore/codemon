@@ -183,6 +183,8 @@ function load_level(level_num){
 	stage.addChild(side);
 	graphics.push(side);
 
+
+
 	// simple back button will take one to previous menu.
         var back_button = new button("Back", 0xff9900, 50, 260, 60, 30);
         back_button.graphic.buttonMode = true;
@@ -271,8 +273,27 @@ function load_level(level_num){
         //blocks.push(new block());
         //stage.addChild(blocks[blocks.length-1].block);
 
+        var tex = PIXI.Texture.fromImage("res/bacgkround_codemon.png");
+        var bg = new PIXI.Sprite(tex);
+        bg.scale.x = 0.5;
+        bg.scale.y = 0.5;
+        bg.position.x = 460;
+        bg.position.y = -58;
+        stage.addChild(bg);   
+        graphics.push(bg);
+
+	// Beam that extends from bottom of spaceship
+        tex = PIXI.Texture.fromImage("res/tractor_beam.png");
+        var beam = new PIXI.Sprite(tex);
+        beam.scale.x = 0.5;
+        beam.scale.y = 0.5;
+        beam.position.x = 612;
+        beam.position.y = 110;
+        stage.addChild(beam);   
+        graphics.push(beam);
+
 	//alien spaceship.
-	var tex = PIXI.Texture.fromImage("res/ship.png");
+	tex = PIXI.Texture.fromImage("res/ship.png");
         ship = new PIXI.Sprite(tex);
         ship.scale.x = 0.25;
         ship.scale.y = 0.25;
@@ -337,6 +358,7 @@ function menu_change(new_menu){
 			break;
 		}
 	}
+	debug(""+buttons.toString());
 	console.log("Buttons cleared!");
 
 	// next we remove any blocks on board.
@@ -347,6 +369,7 @@ function menu_change(new_menu){
                         break;
                 }
         }
+	debug(""+blocks.toString());
         console.log("Blocks cleared!");
 
 	//cearing graphics
@@ -357,6 +380,7 @@ function menu_change(new_menu){
                         break;
                 }
         }
+	debug(""+graphics.toString());
         console.log("Graphics cleared!");
 
 	// then clean up misc will code this away later.
@@ -416,9 +440,11 @@ function graphical_queue(){
 			sprite.position.x = 80 * (this.queue.length-1);
 			this.container.addChild(sprite);
 			//this.container.sprite.position.x *= (this.queue.length-1);
-			console.log("added a sprite!");
+			//console.log("added a sprite!");
+			debug("Added Sprite!");
 		}else{
-			console.log("...sprite was null.");
+			debug("..sprite was null.");
+			//console.log("...sprite was null.");
 		}
 	}
 
@@ -443,6 +469,7 @@ function graphical_queue(){
 }
 
 function populate_queue(input_queue){
+
 	input = new graphical_queue;
 	//input.container.position.x = 150;
         //input.container.position.y = 200;
@@ -476,6 +503,7 @@ function populate_queue(input_queue){
 }
 
 function update(){
+
 	// Loop that moves the interpreter.
 	if(running){
 		if(bar.position.y > 290){
@@ -495,8 +523,8 @@ function update(){
 					//print text
 					console.log("YOU DID IT!");
 				        var win_banner = new PIXI.Text('You did it!',{font : '25px Arial', fill : 0xff1010, align : 'justified'});
-        				win_banner.position.x = 555;
-        				win_banner.position.y = 155; 
+        				win_banner.position.x = 580;
+        				win_banner.position.y = 5; 
         				stage.addChild(win_banner);
 					graphics.push(win_banner);
 				}else{

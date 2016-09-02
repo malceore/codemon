@@ -290,10 +290,12 @@ function block(name){
 	this.block.isButton = true;	
 	// Basicaly is button is true to spawn a new button when the old block is moved.
 	this.block.mousedown = this.block.touchstart = function(data){
+
 		// store a refference to the data
 		// The reason for this is because of multitouch
 		// we want to track the movement of this particular touch
 		if(isButton){
+
 			// This is how new blocks are spawned, new block becomes the button and old block gets dragged on to play screen.
 			isButton = false;
 			this.isButton = false;
@@ -301,7 +303,6 @@ function block(name){
 			blocks.push(new block(name));
 			blocks[blocks.length-1].block.position.x = this.position.x;
                         blocks[blocks.length-1].block.position.y = this.position.y;
-
 			stage.addChild(blocks[blocks.length-1].block);
 		}else{
 
@@ -311,6 +312,7 @@ function block(name){
 				//If we have a loop block we need to check all to see if this blocks ID is in his child ids list.
 				if(blocks[i].name == "loop"){
 					for(j in blocks[i].ids_of_children){
+
 						//console.log("  " + blocks[i].ids_of_children[j] );
 						if(this.id == blocks[i].ids_of_children[j]){
 							console.log("Removing child " + blocks[j].block.id);
@@ -344,43 +346,48 @@ function block(name){
 			//stage.removeChild(this);
 			//Now must find block in the array and remove it, a tricky thing in javascript.
 			for(var i=0; i<blocks.length; i++){
+				debug(" "+ blocks[i].block.id + "=="+this.id);
 				//console.log("Found this!" + blocks[i].id + " = " +id);
-				if((blocks[i].id == id) && (blocks[i].block.isButton == false)){
+				if((blocks[i].block.id == this.id) && (blocks[i].block.isButton == false)){
 					//console.log("Found");
 					blocks.splice(i, 1);
 					stage.removeChild(this);
 				}
 			}
-		}
+		}else{
 
-		//Snap to other buttons drop. iterate through blocks.
-		for(var i=0; i<blocks.length; i++){
-			//if this blocks parrent node is within 10px of childnode of any block.
-			//console.log("placed")
-                        //console.log(" : " + (parentX + this.position.x) + ", " + (blocks[i].childX + blocks[i].block.position.x));
-			if(id != blocks[i].id){
+			//Snap to other buttons drop. iterate through blocks.
+			for(var i=0; i<blocks.length; i++){
+
+				//if this blocks parrent node is within 10px of childnode of any block.
+				//console.log("placed")
+	                        //console.log(" : " + (parentX + this.position.x) + ", " + (blocks[i].childX + blocks[i].block.position.x));
+				if(id != blocks[i].id){
 				
-	                        if(Math.abs((parentX + this.position.x) - (blocks[i].childX + blocks[i].block.position.x) ) < 20){ 
-					//console.log("CLOSE : " (this.parentX + this.position.x) + ", " + (blocks[i].childX + blocks[i].block.position.x));
-					//console.log("CLOSE");
-					if(Math.abs((parentY + this.position.y) - (blocks[i].block.position.y + blocks[i].childY)) < 30){
-						//console.log("SNAPPED to: " + blocks[i].name + "   ids: " + id + ", " + blocks[i].id);
-						//this.position.y = (blocks[i].block.position.y + blocks[i].childY);
-       	                                	//this.position.x = (blocks[i].block.position.x + blocks[i].childX);
-						//blocks[i].block.addChild(this);
-						//stage.removeChild(this);
-						//this.scale.x = this.scale.y = 1;
-						//Loop is a special case because being one of it's children changes how you are read in.
-						if(blocks[i].name == "loop"){
-							console.log("added child!" + this.id);
-							blocks[i].ids_of_children.push(this.id);
-						}
+		                        if(Math.abs((parentX + this.position.x) - (blocks[i].childX + blocks[i].block.position.x) ) < 10){ 
 
-						this.position.x = blocks[i].block.position.x + (blocks[i].childX);
-						this.position.y = blocks[i].block.position.y + (blocks[i].childY);
-						console.log("snapped pos: " + this.position.x +", "+ this.position.y);
-						//blocks[i].block.addChild(this);
-						//Alter placement on release.
+						//console.log("CLOSE : " (this.parentX + this.position.x) + ", " + (blocks[i].childX + blocks[i].block.position.x));
+						//console.log("CLOSE");
+						if(Math.abs((parentY + this.position.y) - (blocks[i].block.position.y + blocks[i].childY)) < 20){
+							//console.log("SNAPPED to: " + blocks[i].name + "   ids: " + id + ", " + blocks[i].id);
+							//this.position.y = (blocks[i].block.position.y + blocks[i].childY);
+	       	                                	//this.position.x = (blocks[i].block.position.x + blocks[i].childX);
+							//blocks[i].block.addChild(this);
+							//stage.removeChild(this);
+							//this.scale.x = this.scale.y = 1;
+							//Loop is a special case because being one of it's children changes how you are read in.
+							if(blocks[i].name == "loop"){
+								console.log("added child!" + this.id);
+								blocks[i].ids_of_children.push(this.id);
+							}
+
+							this.position.x = blocks[i].block.position.x + (blocks[i].childX);
+							this.position.y = blocks[i].block.position.y + (blocks[i].childY);
+							//console.log("snapped pos: " + this.position.x +", "+ this.position.y);
+							console.log("snapped to: " + blocks[i].name);
+							//blocks[i].block.addChild(this);
+							//Alter placement on release.
+						}
 					}
 				}
 			}
