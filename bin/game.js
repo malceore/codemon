@@ -174,18 +174,25 @@ function options(){
 // function needed to print out the blocks and setup the challenge for each level.
 function load_level(level_num){
 
-	var popup;
+		// This sets up the background for the code blocks.
+        tex = PIXI.Texture.fromImage("res/code_bg.png");
+        var code_bg = new PIXI.Sprite(tex);
+        code_bg.scale.x = 0.65;
+        code_bg.scale.y = 0.65;
+        code_bg.position.x = 80;
+        code_bg.position.y = -20;
+        stage.addChild(code_bg);   
+        graphics.push(code_bg);
 
-	//Here is the sidebar that will hold the blocks.
-	var side = new PIXI.Graphics();
-	side.beginFill(0xFFFF00);
-	side.drawRect(0, 0, 80, 300);
-	stage.addChild(side);
-	graphics.push(side);
+		var popup;
+		//Here is the sidebar that will hold the blocks.
+		var side = new PIXI.Graphics();
+		side.beginFill(0xFFFF00);
+		side.drawRect(0, 0, 80, 300);
+		stage.addChild(side);
+		graphics.push(side);
 
-
-
-	// simple back button will take one to previous menu.
+		// simple back button will take one to previous menu.
         var back_button = new button("Back", 0xff9900, 50, 260, 60, 30);
         back_button.graphic.buttonMode = true;
         back_button.graphic.interactive = true;
@@ -214,7 +221,7 @@ function load_level(level_num){
 
         // reset board
         var reset = new button("Reset", 0xff9900, 210, 260, 60, 30);
-	reset.graphic.value = level_num;
+		reset.graphic.value = level_num;
         reset.graphic.buttonMode = true;
         reset.graphic.interactive = true;
         reset.graphic.click = function(mouseData){
@@ -235,54 +242,55 @@ function load_level(level_num){
         }
         // pushing to buttons will place on a global array for cleaning up between states.  
         buttons.push(clear);
-	// This bar is the interpreter, as it moves from top to bottom it's collisions will trigger events on the game.
+		// This bar is the interpreter, as it moves from top to bottom it's collisions will trigger events on the game.
         bar = new PIXI.Graphics();
         bar.beginFill(0xFF0000);
         bar.drawRect(82, 0, 320, 15);
-	// Circle button that launches the interpreter.
-	var run_button = new PIXI.Graphics();
+		// Circle button that launches the interpreter.
+		var run_button = new PIXI.Graphics();
         run_button.beginFill(0xFFF000);
-	run_button.drawCircle(240, 7, 15);
+		run_button.drawCircle(240, 7, 15);
         run_button.buttonMode = true;
         run_button.interactive = true;
         run_button.click = run_button.tap = function(data){
-		run_interpreter();	
-	}
-	bar.addChild(run_button);
-        stage.addChild(bar);
-	graphics.push(bar);
+			run_interpreter();	
+		}
+		bar.addChild(run_button);
+	    stage.addChild(bar);
+		graphics.push(bar);
 
-	// Setting up blocks that need to be in this level.
-	current_level = level_list[level_num];
+		// Setting up blocks that need to be in this level.
+		current_level = level_list[level_num];
 
-	var block_list = current_level.block_list;
-	var block_list = block_list.split(' ');
-	for(var i=0; i<block_list.length; i++){
-		//will print blocks via their object right here.
-		console.log("	loading " + block_list[i] + " block.");
-		// need to initiate the blocks.
-		holder = new block(block_list[i]);
-		holder.block.position.x = 5;
-                holder.block.position.y = 10+(40*i);
-		stage.addChild(holder.block);
-		//blocks.push(new block());
-		blocks.push(holder);
-		//stage.addChild(holder.graphic);
-	}
+		var block_list = current_level.block_list;
+		var block_list = block_list.split(' ');
+		for(var i=0; i<block_list.length; i++){
+			//will print blocks via their object right here.
+			console.log("	loading " + block_list[i] + " block.");
+			// need to initiate the blocks.
+			holder = new block(block_list[i]);
+			holder.block.position.x = 5;
+	                holder.block.position.y = 10+(40*i);
+			stage.addChild(holder.block);
+			//blocks.push(new block());
+			blocks.push(holder);
+			//stage.addChild(holder.graphic);
+		}
         //var block_button = new new_block();
         //blocks.push(new block());
         //stage.addChild(blocks[blocks.length-1].block);
 
-        var tex = PIXI.Texture.fromImage("res/bacgkround_codemon.png");
-        var bg = new PIXI.Sprite(tex);
-        bg.scale.x = 0.5;
-        bg.scale.y = 0.5;
-        bg.position.x = 460;
-        bg.position.y = -58;
-        stage.addChild(bg);   
-        graphics.push(bg);
 
-	// Beam that extends from bottom of spaceship
+        var tex = PIXI.Texture.fromImage("res/background_codemon.png");
+        var game_bg = new PIXI.Sprite(tex);
+        game_bg.scale.x = 0.5;
+        game_bg.scale.y = 0.5;
+        game_bg.position.x = 460;
+        game_bg.position.y = -58;
+        stage.addChild(game_bg);   
+        graphics.push(game_bg);
+
+		// Beam that extends from bottom of spaceship
         tex = PIXI.Texture.fromImage("res/tractor_beam.png");
         var beam = new PIXI.Sprite(tex);
         beam.scale.x = 0.5;
@@ -292,29 +300,31 @@ function load_level(level_num){
         stage.addChild(beam);   
         graphics.push(beam);
 
-	//alien spaceship.
-	tex = PIXI.Texture.fromImage("res/ship.png");
+		//alien spaceship.
+		tex = PIXI.Texture.fromImage("res/ship.png");
         ship = new PIXI.Sprite(tex);
         ship.scale.x = 0.25;
-        ship.scale.y = 0.25;
-	ship.position.x = 600;
-	ship.position.y = 60;
-	stage.addChild(ship);	
-	graphics.push(ship);
+	    ship.scale.y = 0.25;
+		ship.position.x = 600;
+		ship.position.y = 60;
+		stage.addChild(ship);	
+		graphics.push(ship);
 
-	// place queue in here.
-	var input_queue = current_level.input_queue;
-	input_queue = input_queue.split(" ");
-	populate_queue(input_queue);
+		// place queue in here.
+		var input_queue = current_level.input_queue;
+		input_queue = input_queue.split(" ");
+		populate_queue(input_queue);
         input.container.position.x = 630;
         input.container.position.y = 220;
-	input.target.visible = true;
-	//buttons.push(input);
-	//populate_queue(input_queue);
-	output = new graphical_queue();
-	output.container.position.x = 480;
-        output.container.position.y = 10;
-	//buttons.push(output);  
+		input.target.visible = true;
+		//buttons.push(input);
+		//populate_queue(input_queue);
+		output = new graphical_queue();
+		output.container.position.x = 480;
+	    output.container.position.y = 10;
+	    output.container.alpha = 0.6;
+		//buttons.push(output);  
+
         //..Popup quest box, togglable.
         popup = new PIXI.Graphics();
         popup.beginFill(0x33cc33);
@@ -325,25 +335,24 @@ function load_level(level_num){
         text.position.x = 255;
         text.position.y = 35; 
         popup.addChild(text);
-
         var okay_button = new PIXI.Text("X",{font : '15px Arial', fill : 0xff0000, align : 'justified'});
         //var okay_button = new PIXI.Graphics();
         //okay_button.beginFill(0xff3300);
         //okay_button.drawCircle(440, 40, 10);
         okay_button.buttonMode = true;
         okay_button.interactive = true;
-	okay_button.position.x = 435;
-	okay_button.position.y = 38;
+		okay_button.position.x = 435;
+		okay_button.position.y = 38;
         okay_button.click = okay_button.tap = function(data){
-                //run_interpreter();
-		if(this.parent.visible == true){
-			this.parent.visible = false;
-		}else{
-			this.parent.visible = true;
-		}
+             //run_interpreter();
+			if(this.parent.visible == true){
+				this.parent.visible = false;
+			}else{
+				this.parent.visible = true;
+			}
         }
         popup.addChild(okay_button);
-	graphics.push(popup);
+		graphics.push(popup);
 }
 
 //Param is the name of the menu being changed in. Can either be main, level+num, level select, options or free play.
@@ -426,9 +435,9 @@ function graphical_queue(){
 	this.container.drawRect(0, 0, 430, 70); // drawRect(x, y, width, height)
 	//this.container.endFill();
 	stage.addChild(this.container);
-        this.target = new PIXI.Graphics();
-        this.target.beginFill(0xffff66);
-        this.target.drawCircle(35, 30, 40);
+    this.target = new PIXI.Graphics();
+    this.target.beginFill(0xffff66);
+    this.target.drawCircle(35, 30, 40);
 	this.target.visible = false;
 	this.container.addChild(this.target);
 
@@ -480,17 +489,17 @@ function populate_queue(input_queue){
 		var tex;
 		if(input_queue[i] == "cow"){
 
-                	tex = PIXI.Texture.fromImage("res/cow.png");
+                	tex = PIXI.Texture.fromImage("res/cow_color.png");
 	                holder = new PIXI.Sprite(tex);
 			holder.name = "cow";
 		}else if(input_queue[i] == "farmer"){
 
-			tex = PIXI.Texture.fromImage("res/farmer.png");
+			tex = PIXI.Texture.fromImage("res/farmer_color.png");
                         holder = new PIXI.Sprite(tex);
                         holder.name = "farmer";
 		}else{
 
-			tex = PIXI.Texture.fromImage("res/tractor.png");
+			tex = PIXI.Texture.fromImage("res/tractor_color.png");
                         holder = new PIXI.Sprite(tex);
                         holder.name = "tractor";
 		}
@@ -522,10 +531,18 @@ function update(){
 				if(did_win){
 					//print text
 					console.log("YOU DID IT!");
-				        var win_banner = new PIXI.Text('You did it!',{font : '25px Arial', fill : 0xff1010, align : 'justified'});
-        				win_banner.position.x = 580;
-        				win_banner.position.y = 5; 
-        				stage.addChild(win_banner);
+					var textOptions = {
+    					//font: &amp;amp;amp;quot;bold 64px Roboto&amp;amp;amp;quot;, // Set style, size and font
+    					fill: '#3498db', // Set fill color to blue
+    					align: 'center', // Center align the text, since it's multiline
+    					stroke: '#34495e', // Set stroke color to a dark blue-gray color
+    					strokeThickness: 2, // Set stroke thickness to 20
+    					lineJoin: 'round' // Set the lineJoin to round instead of 'miter'
+					}
+				    var win_banner = new PIXI.Text('You did it!', textOptions);//{font : '25px Arial', fill : 0xff1010, align : 'justified'});
+        			win_banner.position.x = 580;
+        			win_banner.position.y = 150; 
+        			stage.addChild(win_banner);
 					graphics.push(win_banner);
 				}else{
 					console.log("YOU LOSE");
